@@ -6,7 +6,7 @@
 
 REST API to download `.mp3` and `.mp4` files.
 
-**Base URL endpoint** `https://youtube-download-api.matheusishiyama.repl.co`
+**Base URL endpoint** `!https://ytdlp-core.onrender.com`
 
 ---
 
@@ -65,4 +65,4 @@ REST API to download `.mp3` and `.mp4` files.
 
 ---
 
-_by Bravan_
+_by Codertalhabd_
