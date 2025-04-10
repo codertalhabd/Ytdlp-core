@@ -1,5 +1,5 @@
 const express = require("express");
-const ytdl = require("ytdl-core");
+const ytdl = require("@distube/ytdl-core");
 const cors = require("cors");
 const sanitize = require("sanitize-filename");
 
@@ -19,11 +19,17 @@ app.get("/info", async (req, res) => {
     const { url } = req.query;
 
     if (!url) return res.status(400).send("Invalid query");
-
     if (!ytdl.validateURL(url)) return res.status(400).send("Invalid URL");
 
     try {
-        const info = await ytdl.getInfo(url);
+        const info = await ytdl.getInfo(url, {
+            requestOptions: {
+                headers: {
+                    "User-Agent": "Mozilla/5.0"
+                }
+            }
+        });
+
         const details = info.videoDetails;
 
         res.send({
@@ -32,6 +38,7 @@ app.get("/info", async (req, res) => {
             duration: details.lengthSeconds,
         });
     } catch (error) {
+        console.error("Error fetching info:", error);
         res.status(500).send("Failed to retrieve video info");
     }
 });
@@ -40,11 +47,16 @@ app.get("/mp3", async (req, res) => {
     const { url } = req.query;
 
     if (!url) return res.status(400).send("Invalid query");
-
     if (!ytdl.validateURL(url)) return res.status(400).send("Invalid URL");
 
     try {
-        const info = await ytdl.getInfo(url);
+        const info = await ytdl.getInfo(url, {
+            requestOptions: {
+                headers: {
+                    "User-Agent": "Mozilla/5.0"
+                }
+            }
+        });
         const title = sanitize(info.videoDetails.title);
 
         res.header("Content-Disposition", `attachment; filename="${title}.mp3"`);
@@ -53,8 +65,14 @@ app.get("/mp3", async (req, res) => {
         ytdl(url, {
             filter: "audioonly",
             quality: "highestaudio",
+            requestOptions: {
+                headers: {
+                    "User-Agent": "Mozilla/5.0"
+                }
+            }
         }).pipe(res);
     } catch (error) {
+        console.error("Error streaming mp3:", error);
         res.status(500).send("Error streaming audio");
     }
 });
@@ -63,11 +81,16 @@ app.get("/mp4", async (req, res) => {
     const { url } = req.query;
 
     if (!url) return res.status(400).send("Invalid query");
-
     if (!ytdl.validateURL(url)) return res.status(400).send("Invalid URL");
 
     try {
-        const info = await ytdl.getInfo(url);
+        const info = await ytdl.getInfo(url, {
+            requestOptions: {
+                headers: {
+                    "User-Agent": "Mozilla/5.0"
+                }
+            }
+        });
         const title = sanitize(info.videoDetails.title);
 
         res.header("Content-Disposition", `attachment; filename="${title}.mp4"`);
@@ -75,8 +98,14 @@ app.get("/mp4", async (req, res) => {
 
         ytdl(url, {
             quality: "highestvideo",
+            requestOptions: {
+                headers: {
+                    "User-Agent": "Mozilla/5.0"
+                }
+            }
         }).pipe(res);
     } catch (error) {
+        console.error("Error streaming mp4:", error);
         res.status(500).send("Error streaming video");
     }
 });
